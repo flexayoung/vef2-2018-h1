@@ -24,5 +24,6 @@ CREATE TABLE userbooks(
   id serial primary key,
   userID serial REFERENCES users(id),
   bookID serial REFERENCES books(id),
-  score integer check(score < 6 and score > 0)
+  score integer check(score < 6 and score > 0),
+  review text
 );
