@@ -14,7 +14,6 @@ const schemaFile = './schema.sql';
 
 async function query(q) {
   const client = new Client({ connectionString });
-  console.log(connectionString);
   await client.connect();
 
   try {
@@ -38,30 +37,27 @@ async function create() {
   console.info('Schema created');
 }
 
-
-
 async function addData() {
   const filePath = path.join(__dirname, '..', 'data', 'books.csv');
   await query(`
     CREATE TEMPORARY TABLE t
     (title varchar, author varchar, description varchar,
-      isbn10 varchar, isbn13 text, published varchar,
-      pagecount integer, language varchar, category varchar);
+    isbn10 varchar, isbn13 text, published varchar,
+    pagecount integer, language varchar, category varchar);
 
-      \COPY t (title, author, description, isbn10, isbn13, published, pagecount, language, category)
-      FROM '${filePath}'
-      (FORMAT csv, HEADER, DELIMITER ',', NULL 'NULL');
+    COPY t (title, author, description, isbn10, isbn13, published, pagecount, language, category)
+    FROM '${filePath}'
+    (FORMAT csv, HEADER, DELIMITER ',', NULL 'NULL');
 
-      INSERT INTO categories (name)
-      SELECT DISTINCT category
-      FROM t;
+    INSERT INTO categories (name)
+    SELECT DISTINCT category
+    FROM t;
 
-      INSERT INTO books (title, isbn13, author, descr, category)
-      SELECT title, isbn13, author, description, category
-      FROM t;`);
+    INSERT INTO books (title, isbn13, author, descr, category)
+    SELECT title, isbn13, author, description, category
+    FROM t;`);
 
-      console.info('Schema updated');
-
+  console.info('Schema updated');
 }
 
 create()
