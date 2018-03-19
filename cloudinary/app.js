@@ -11,6 +11,7 @@ const {
   CLOUDINARY_CLOUD,
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
+  DATABASE_URL,
 } = process.env;
 
 if (!CLOUDINARY_CLOUD || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
@@ -26,8 +27,8 @@ cloudinary.config({
 const app = express();
 
 app.use(express.json());
-app.use('/', api);
-
+app.use('/users', users);
+app.use('/books', books);
 
 function notFoundHandler(req, res, next) { // eslint-disable-line
   res.status(404).json({ error: 'Not found' });
