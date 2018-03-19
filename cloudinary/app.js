@@ -11,6 +11,7 @@ const {
   CLOUDINARY_CLOUD,
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
+  DATABASE_URL,
 } = process.env;
 
 if (!CLOUDINARY_CLOUD || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
@@ -25,36 +26,27 @@ cloudinary.config({
 
 const app = express();
 
-async function upload(req, res, next) {
-  const { file: { path } = {} } = req;
-console.log(req.file)
-  if (!path) {
-    return res.send('gat ekki lesið mynd');
-  }
+app.use(express.json());
+app.use('/users', users);
+app.use('/books', books);
 
-  let upload = null;
-
-  try {
-    upload = await cloudinary.v2.uploader.upload(path);
-  } catch (error) {
-    console.error('Unable to upload file to cloudinary:', path);
-    return next(error);
-  }
-
-  const { secure_url } = upload;
-
-  res.send(`<img src="${secure_url}">`);
+function notFoundHandler(req, res, next) { // eslint-disable-line
+  res.status(404).json({ error: 'Not found' });
 }
 
-app.get('/', (req, res) => {
-  res.send(`
-    <form method="post" action="/upload" enctype="multipart/form-data"n>
-      <input type="file" name="image" />
-      <button>Senda</button>
-    </form>
-  `);
-});
-app.post('/upload', uploads.single('image'), upload);
+function errorHandler(err, req, res, next) { // eslint-disable-line
+  console.error(err);
+
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ error: 'Invalid json' });
+  }
+
+  return res.status(500).json({ error: 'Internal server error' });
+}
+
+app.use(notFoundHandler);
+app.use(errorHandler);
+
 
 app.listen(port, () => {
   if (host) {
