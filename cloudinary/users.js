@@ -1,40 +1,72 @@
-const express = require('express');
-const { upload } = require('./cloudinary')
+const bcrypt = require('bcrypt');
+const { Client } = require('pg');
 
-const router = express.Router();
+const connectionString = process.env.DATABASE_URL;
 
-// app.get('/', (req, res) => {
-//   res.send(`
-//     <form method="post" action="/upload" enctype="multipart/form-data"n>
-//       <input type="file" name="image" />
-//       <button>Senda</button>
-//     </form>
-//   `);
-// });
-// app.post('/upload', uploads.single('image'), upload);
+async function query(q, values = []) {
+  const client = new Client({ connectionString });
+  await client.connect();
 
-router.route('/')
-  //.get(catchErrors(fnReadAll));
+  let result;
 
-router.route('/:id')
-  //.get(catchErrors(fnReadOne));
+  try {
+    result = await client.query(q, values);
+  } catch (err) {
+    throw err;
+  } finally {
+    await client.end();
+  }
 
-router.route('/:id/read')
-  //.get(catchErrors(fnReadOne));
+  return result;
+}
 
-router.route('/me')
-  //.get(catchErrors(fnReadOne))
-  //.patch(catchErrors(fnReadOne));
+async function comparePasswords(hash, password) {
+  const result = await bcrypt.compare(hash, password);
 
-router.route('/me/read')
-  //.get(catchErrors(fnReadOne))
-  //.post(catchErrors(fnReadOne));
+  return result;
+}
 
-router.route('/me/read/:id')
-  //.get(catchErrors(fnReadOne))
-  //.post(catchErrors(fnReadOne));
+async function findByUsername(username) {
+  const q = 'SELECT * FROM users WHERE username = $1';
 
-router.route('/me/profile')
-  //.post(catchErrors(fnReadOne));
+  const result = await query(q, [username]);
 
-module.exports = router;
+  if (result.rowCount === 1) {
+    return result.rows[0];
+  }
+
+  return null;
+}
+
+async function findById(id) {
+  const q = 'SELECT * FROM users WHERE id = $1';
+
+  const result = await query(q, [id]);
+
+  if (result.rowCount === 1) {
+    return result.rows[0];
+  }
+
+  return null;
+}
+
+async function createUser(username, password, name) {
+  const hashedPassword = await bcrypt.hash(password, 11);
+
+  const q = 'INSERT INTO users (username, password, name) VALUES ($1, $2, $3) RETURNING *';
+
+  const result = await query(q, [username, hashedPassword, name]);
+
+  return { "id": result.rows[0].id, "username": result.rows[0].username, "name": result.rows[0].name, "image": result.rows[0].url }
+
+}
+
+
+
+
+module.exports = {
+  comparePasswords,
+  findByUsername,
+  findById,
+  createUser,
+}
