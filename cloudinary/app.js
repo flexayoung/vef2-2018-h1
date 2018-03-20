@@ -8,6 +8,7 @@ const usersAPI = require('./usersAPI');
 // const uploads = multer({ dest: './temp' });
 const authorise = require('./authorise');
 const passport = require('passport');
+require('./pass');
 
 
 const {
