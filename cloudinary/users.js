@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt');
 const { Client } = require('pg');
-const users = require('./users');
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -66,17 +65,10 @@ async function createUser(username, password, name) {
   };
 }
 
-async function getAllUsers() {
-  const result = await query('SELECT * FROM users');
-  const formatted = [];
-  result.rows.forEach(i => formatted.push({
-    id: i.id,
-    username: i.username,
-    name: i.name,
-    image: i.url,
-  }));
-
-  return { items: formatted };
+async function getAllUsers(offset, limit) {
+  const q = 'SELECT id, username, name, url FROM users ORDER BY id OFFSET $1 LIMIT $2';
+  const result = await query(q, [offset, limit]);
+  return result.rows;
 }
 
 module.exports = {

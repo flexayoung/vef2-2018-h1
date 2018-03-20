@@ -12,14 +12,6 @@ function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
 }
 
-function ensureLoggedIn(req, res, next) {
-  // if (req.isAuthenticated()) {
-  //   return next();
-  // }
-  //
-  // return res.redirect('/login');
-}
-
 // app.get('/', (req, res) => {
 //   res.send(`
 //     <form method="post" action="/upload" enctype="multipart/form-data"n>
@@ -35,11 +27,16 @@ function ensureLoggedIn(req, res, next) {
 // }
 
 async function fnGetUsers(req, res) {
-  const userList = await users.getAllUsers();
-  res.status(200).json(userList);
+  let { offset = 0, limit = 10 } = req.query;
+  offset = Number(offset);
+  limit = Number(limit);
+
+  const rows = await users.getAllUsers(offset, limit);
+
+  res.status(200).json({ limit, offset, items: rows });
 }
 
-router.route('/')
-  .get(catchErrors(fnGetUsers));
+router.get('/', catchErrors(fnGetUsers));
+router.get('/', catchErrors(fnGetUsers));
 
 module.exports = router;
