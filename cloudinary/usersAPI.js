@@ -1,8 +1,10 @@
 const express = require('express');
-const {
-  upload,
-} = require('./cloudinary');
 const users = require('./users');
+
+
+// const {
+//   upload,
+// } = require('./cloudinary');
 
 const router = express.Router();
 
@@ -27,12 +29,17 @@ function ensureLoggedIn(req, res, next) {
 //   `);
 // });
 // app.post('/upload', uploads.single('image'), upload);
-// 
+//
 // async function fnGetUsers(req, res) {
 //
 // }
 
+async function fnGetUsers(req, res) {
+  const userList = await users.getAllUsers();
+  res.status(200).json(userList);
+}
+
 router.route('/')
-  //.get(catchErrors(fnGetUsers));
+  .get(catchErrors(fnGetUsers));
 
 module.exports = router;
