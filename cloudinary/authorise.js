@@ -11,7 +11,7 @@ const users = require('./users');
 
 const {
   JWT_SECRET: jwtSecret,
-  TOKEN_LIFETIME: tokenLifetime = 20,
+  TOKEN_LIFETIME: tokenLifetime = '2 days',
 } = process.env;
 
 if (!jwtSecret) {

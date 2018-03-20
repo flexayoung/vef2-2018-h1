@@ -71,9 +71,9 @@ async function getAllUsers(offset, limit) {
   return result.rows;
 }
 
-async function getUserFromId(id) {
-  const q = 'SELECT id, username, name, url FROM users WHERE id = $1';
-  const result = await query(q, [id]);
+async function updateUser(id, name, password) {
+  const q = 'UPDATE users SET name = $1, password = $2 WHERE id = $3';
+  const result = await query(q, [name, password, id]);
 
   return result.rows[0];
 }
@@ -84,5 +84,5 @@ module.exports = {
   findById,
   createUser,
   getAllUsers,
-  getUserFromId,
+  updateUser,
 };

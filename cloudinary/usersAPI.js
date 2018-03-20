@@ -60,8 +60,8 @@ async function fnUpdateUser(req, res) {
     name = req.user.name,
     password = req.user.password,
   } = req.body;
-  console.log("name ", name, " password ", password)
-  //const row = await users.updateUser(user.id, name, password);
+  const row = await users.updateUser(user.id, name, password);
+  res.satus(200).json(row);
 }
 
 router.get('/', catchErrors(fnGetAllUsers));
