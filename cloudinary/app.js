@@ -16,7 +16,6 @@ const {
   CLOUDINARY_CLOUD,
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
-  DATABASE_URL,
   JWT_SECRET: jwtSecret,
   TOKEN_LIFETIME: tokenLifetime = 20,
 } = process.env;
@@ -37,7 +36,7 @@ function requireAuthentication(req, res, next) {
 
       req.user = user;
       next();
-    }
+    },
   )(req, res, next);
 }
 
@@ -59,8 +58,7 @@ if (!jwtSecret) {
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: jwtSecret,
-}
-
+};
 
 passport.use(new Strategy(jwtOptions, strat));
 
@@ -70,7 +68,7 @@ app.use(express.json());
 
 app.use(passport.initialize());
 
-app.use('/', usersAPI);
+app.use('/users', usersAPI);
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -86,7 +84,7 @@ app.post('/login', async (req, res) => {
     const payload = { id: user.id };
     const tokenOptions = { expiresIn: tokenLifetime };
     const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
-    return res.json({ token, 'expiresIn': tokenOptions.expiresIn });
+    return res.json({ token, expiresIn: tokenOptions.expiresIn });
   }
 
   return res.status(401).json({ error: 'Invalid password' });
@@ -99,14 +97,14 @@ app.post('/register', async (req, res) => {
     name = '',
   } = req.body;
 
-  const errors = { "errors" : await validateUser(username, password, name) };
+  const errors = { errors: await users.validateUser(username, password, name) };
+
   if (errors.errors.length !== 0) {
     return res.status(400).json(errors);
   }
 
   await users.createUser(username, password, name)
     .then(data => res.status(200).json(data));
-
 });
 
 if (!CLOUDINARY_CLOUD || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {

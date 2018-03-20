@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { Client } = require('pg');
+const users = require('./users');
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -57,16 +58,47 @@ async function createUser(username, password, name) {
 
   const result = await query(q, [username, hashedPassword, name]);
 
-  return { "id": result.rows[0].id, "username": result.rows[0].username, "name": result.rows[0].name, "image": result.rows[0].url }
-
+  return {
+    id: result.rows[0].id,
+    username: result.rows[0].username,
+    name: result.rows[0].name,
+    image: result.rows[0].url,
+  };
 }
 
+async function getAllUsers() {
+  const results = await query('SELECT username, name FROM users');
 
+  return { results };
+}
 
+async function validateUser(username, password, name) {
+  const errors = [];
+  if (typeof username !== 'string' || username.length < 3) {
+    errors.push({ field: 'username', message: 'Username is required and must be at least three letters' });
+  }
+
+  const user = await findByUsername(username);
+
+  if (user) {
+    errors.push({ field: 'username', message: 'Username is already registered' });
+  }
+
+  if (typeof password !== 'string' || password.length < 6) {
+    errors.push({ field: 'password', message: 'Password must be at least six characters' });
+  }
+
+  if (typeof name !== 'string' || name.length < 2) {
+    errors.push({ field: 'name', message: 'Name must not be empty and at least 2 characters ' });
+  }
+
+  return errors;
+}
 
 module.exports = {
   comparePasswords,
   findByUsername,
   findById,
   createUser,
-}
+  validateUser,
+};
