@@ -1,4 +1,3 @@
-const express = require('express');
 const db = require('./db.js');
 const xss = require('xss');
 
@@ -20,9 +19,6 @@ const validation = [
 
   sanitize('title').trim(),
 ];
-
-
-const router = express.Router();
 
 async function create({
   title, isbn13, author, descr, category,
@@ -49,7 +45,7 @@ async function update(id, {
     descr: xss(descr),
     category: xss(category),
   };
-  const query = await db.runQuery(`UPDATE notes
+  const query = await db.runQuery(`UPDATE books
   SET category = '${data.category}', author = '${data.author}', isbn13 = '${data.isbn13}', title = '${data.title}', descr = '${data.descr}'
   WHERE id = ${id} RETURNING *`);
   return query;
@@ -65,11 +61,11 @@ async function readAll() {
 }
 
 /**
- * Read a single note.
+ * Read a single book.
  *
- * @param {number} id - Id of note
+ * @param {number} id - Id of book
  *
- * @returns {Promise} Promise representing the note object or null if not found
+ * @returns {Promise} Promise representing the book object or null if not found
  */
 async function readOne(id) {
   /* todo útfæra */
@@ -82,11 +78,11 @@ async function readOne(id) {
 }
 
 /**
- * Delete a note asynchronously.
+ * Delete a book asynchronously.
  *
- * @param {number} id - Id of note to delete
+ * @param {number} id - Id of book to delete
  *
- * @returns {Promise} Promise representing the boolean result of creating the note
+ * @returns {Promise} Promise representing the boolean result of creating the book
  */
 async function del(id) {
   const query = await db.runQuery(`WITH deleted AS 

@@ -1,21 +1,15 @@
 const express = require('express');
-const {
-  upload,
-} = require('./cloudinary');
 const users = require('./users');
+
+
+// const {
+//   upload,
+// } = require('./cloudinary');
 
 const router = express.Router();
 
 function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
-}
-
-function ensureLoggedIn(req, res, next) {
-  // if (req.isAuthenticated()) {
-  //   return next();
-  // }
-  //
-  // return res.redirect('/login');
 }
 
 // app.get('/', (req, res) => {
@@ -27,12 +21,22 @@ function ensureLoggedIn(req, res, next) {
 //   `);
 // });
 // app.post('/upload', uploads.single('image'), upload);
-// 
+//
 // async function fnGetUsers(req, res) {
 //
 // }
 
-router.route('/');
-  //.get(catchErrors(fnGetUsers));
+async function fnGetUsers(req, res) {
+  let { offset = 0, limit = 10 } = req.query;
+  offset = Number(offset);
+  limit = Number(limit);
+
+  const rows = await users.getAllUsers(offset, limit);
+
+  res.status(200).json({ limit, offset, items: rows });
+}
+
+router.get('/', catchErrors(fnGetUsers));
+router.get('/', catchErrors(fnGetUsers));
 
 module.exports = router;

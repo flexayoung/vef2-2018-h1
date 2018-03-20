@@ -58,7 +58,7 @@ async function updateData(req, res) {
   if (upd) {
     return res.json(upd);
   }
-  return res.json({ error: 'Note not found' });
+  return res.json({ error: 'Book not found' });
 }
 
 async function deleteData(req, res) {
@@ -66,7 +66,7 @@ async function deleteData(req, res) {
   if (success[0].count === '1') {
     return res.send(null);
   }
-  return res.json({ error: 'Note not found' });
+  return res.json({ error: 'Book not found' });
 }
 router.post('/', validation, catchErrors(createData));
 
@@ -82,13 +82,13 @@ router.get('/:slug', async (req, res) => {
       if (data[0]) {
         res.json(data);
       } else {
-        res.json({ error: 'Note not found' });
+        res.json({ error: 'Book not found' });
       }
     })
     .catch(err => console.error(err));
 }, catchErrors());
 
-router.put('/:slug', validation, catchErrors(updateData));
+router.patch('/:slug', validation, catchErrors(updateData));
 router.delete('/:slug', catchErrors(deleteData));
 
 module.exports = router;
