@@ -71,10 +71,18 @@ async function getAllUsers(offset, limit) {
   return result.rows;
 }
 
+async function getUserFromId(id) {
+  const q = 'SELECT id, username, name, url FROM users WHERE id = $1';
+  const result = await query(q, [id]);
+  
+  return result.rows[0];
+}
+
 module.exports = {
   comparePasswords,
   findByUsername,
   findById,
   createUser,
   getAllUsers,
+  getUserFromId,
 };

@@ -26,7 +26,7 @@ function catchErrors(fn) {
 //
 // }
 
-async function fnGetUsers(req, res) {
+async function fnGetAllUsers(req, res) {
   let { offset = 0, limit = 10 } = req.query;
   offset = Number(offset);
   limit = Number(limit);
@@ -36,7 +36,15 @@ async function fnGetUsers(req, res) {
   res.status(200).json({ limit, offset, items: rows });
 }
 
-router.get('/', catchErrors(fnGetUsers));
-router.get('/', catchErrors(fnGetUsers));
+async function fnGetUser(req, res) {
+  if (!req.params.id) return res.status(400).json({ error: 'User not found' });
+  const id = Number(req.params.id);
+  const row = await users.getUserFromId(id);
+
+  return res.status(200).json({ user: row });
+}
+
+router.get('/', catchErrors(fnGetAllUsers));
+router.get('/:id', catchErrors(fnGetUser));
 
 module.exports = router;
