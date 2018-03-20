@@ -51,10 +51,10 @@ async function update(id, {
   return query;
 }
 
-async function readAll() {
+async function readAll(offset, limit) {
   let query = null;
   try {
-    query = await db.fetchData();
+    query = await db.runQuery(`SELECT * FROM books ORDER BY id OFFSET ${offset} LIMIT ${limit}`);
     return query;
   } catch (err) { console.error(err); }
   return query;

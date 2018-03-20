@@ -71,7 +71,11 @@ async function deleteData(req, res) {
 router.post('/', validation, catchErrors(createData));
 
 router.get('/', async (req, res) => {
-  readAll()
+  let { offset = 0, limit = 10 } = req.query;
+  offset = Number(offset);
+  limit = Number(limit);
+
+  readAll(offset, limit)
     .then(data => res.json(data))
     .catch(err => console.error(err));
 });
