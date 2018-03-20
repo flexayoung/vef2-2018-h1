@@ -4,6 +4,7 @@ const express = require('express');
 const usersAPI = require('./usersAPI');
 // const users = require('./users');
 const booksAPI = require('./booksAPI');
+const categories = require('./categories');
 // const multer = require('multer');
 // const uploads = multer({ dest: './temp' });
 const authorise = require('./authorise');
@@ -43,6 +44,7 @@ function requireAuthentication(req, res, next) {
 
 app.use('/', authorise);
 app.use('/books', booksAPI);
+app.use('/categories', categories);
 app.use('/users', requireAuthentication, usersAPI);
 
 function notFoundHandler(req, res, next) { // eslint-disable-line
