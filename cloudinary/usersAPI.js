@@ -44,7 +44,30 @@ async function fnGetUser(req, res) {
   return res.status(200).json({ user: row });
 }
 
+async function fnGetCurrentUser(req, res) {  
+  const { user } = req;
+  return res.status(200).json({ 
+    id: user.id,
+    username: user.username,
+    name: user.name,
+    image: user.url,
+  });
+}
+
+async function fnUpdateUser(req, res) {
+  const { user } = req;
+  const {
+    name = req.user.name,
+    password = req.user.password,
+  } = req.body;
+  console.log("name ", name, " password ", password)
+  //const row = await users.updateUser(user.id, name, password);
+}
+
 router.get('/', catchErrors(fnGetAllUsers));
+router.route('/me')
+  .get(catchErrors(fnGetCurrentUser))
+  .patch(catchErrors(fnUpdateUser));
 router.get('/:id', catchErrors(fnGetUser));
 
 module.exports = router;
