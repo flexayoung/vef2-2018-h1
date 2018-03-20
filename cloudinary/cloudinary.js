@@ -20,6 +20,17 @@ async function upload(req, res, next) {
   res.send(`<img src="${secure_url}">`);
 }
 
+// if (!CLOUDINARY_CLOUD || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
+//   console.warn('Missing cloudinary config, uploading images will not work');
+// }
+
+// cloudinary.config({
+//   cloud_name: CLOUDINARY_CLOUD,
+//   api_key: CLOUDINARY_API_KEY,
+//   api_secret: CLOUDINARY_API_SECRET,
+// });
+
+
 module.exports = {
   upload,
 };

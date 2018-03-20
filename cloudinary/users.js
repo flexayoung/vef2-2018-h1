@@ -67,32 +67,16 @@ async function createUser(username, password, name) {
 }
 
 async function getAllUsers() {
-  const results = await query('SELECT username, name FROM users');
+  const result = await query('SELECT * FROM users');
+  const formatted = [];
+  result.rows.forEach(i => formatted.push({
+    id: i.id,
+    username: i.username,
+    name: i.name,
+    image: i.url,
+  }));
 
-  return { results };
-}
-
-async function validateUser(username, password, name) {
-  const errors = [];
-  if (typeof username !== 'string' || username.length < 3) {
-    errors.push({ field: 'username', message: 'Username is required and must be at least three letters' });
-  }
-
-  const user = await findByUsername(username);
-
-  if (user) {
-    errors.push({ field: 'username', message: 'Username is already registered' });
-  }
-
-  if (typeof password !== 'string' || password.length < 6) {
-    errors.push({ field: 'password', message: 'Password must be at least six characters' });
-  }
-
-  if (typeof name !== 'string' || name.length < 2) {
-    errors.push({ field: 'name', message: 'Name must not be empty and at least 2 characters ' });
-  }
-
-  return errors;
+  return { items: formatted };
 }
 
 module.exports = {
@@ -100,5 +84,5 @@ module.exports = {
   findByUsername,
   findById,
   createUser,
-  validateUser,
+  getAllUsers,
 };
