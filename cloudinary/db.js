@@ -26,7 +26,7 @@ async function fetchData() {
   await client.connect();
 
   try {
-    const result = await client.query('SELECT * FROM notes');
+    const result = await client.query('SELECT * FROM books');
 
     const { rows } = result;
     return rows;

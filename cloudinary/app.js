@@ -3,6 +3,7 @@ const cloudinary = require('cloudinary');
 const express = require('express');
 const multer = require('multer');
 const usersAPI = require('./usersAPI');
+const booksAPI = require('./booksAPI');
 const users = require('./users');
 const passport = require('passport');
 const { Strategy, ExtractJwt } = require('passport-jwt');
@@ -68,6 +69,7 @@ app.use(express.json());
 
 app.use(passport.initialize());
 
+app.use('/books', booksAPI);
 app.use('/users', usersAPI);
 
 app.post('/login', async (req, res) => {

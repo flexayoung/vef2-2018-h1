@@ -32,7 +32,7 @@ function ensureLoggedIn(req, res, next) {
 //
 // }
 
-router.route('/')
+router.route('/');
   //.get(catchErrors(fnGetUsers));
 
 module.exports = router;
