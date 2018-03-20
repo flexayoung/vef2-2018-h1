@@ -17,13 +17,13 @@ CREATE TABLE books (
   isbn13 text UNIQUE check(isbn13 < 14),
   author varchar,
   descr varchar,
-  category varchar REFERENCES categories(name)
+  category varchar foreign key REFERENCES categories(name)
 );
 
 CREATE TABLE userbooks(
   id serial primary key,
-  userID serial REFERENCES users(id),
-  bookID serial REFERENCES books(id),
+  userID serial foreign key REFERENCES users(id),
+  bookID serial foreign key REFERENCES books(id),
   score integer check(score < 6 and score > 0),
   review text
 );
