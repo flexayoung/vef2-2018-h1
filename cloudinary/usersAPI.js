@@ -1,9 +1,13 @@
+
 const express = require('express');
 const users = require('./users');
+const books = require('./books');
+const userbooks = require('./userbooks');
+const { upload } = require('./cloudinary');
 
-// const {
-//   upload,
-// } = require('./cloudinary');
+const multer = require('multer');
+
+const uploads = multer({ dest: './temp' });
 
 const router = express.Router();
 
@@ -25,19 +29,23 @@ async function validateUser(password, name) {
   return errors;
 }
 
-// app.get('/', (req, res) => {
-//   res.send(`
-//     <form method="post" action="/upload" enctype="multipart/form-data"n>
-//       <input type="file" name="image" />
-//       <button>Senda</button>
-//     </form>
-//   `);
-// });
-// app.post('/upload', uploads.single('image'), upload);
-//
-// async function fnGetUsers(req, res) {
-//
-// }
+
+async function validateBook(bookId, rating) {
+  const errors = [];
+  if (typeof bookId !== 'number') {
+    errors.push({ field: 'bookId', message: 'Book is required and must be a number' });
+  } else if (!await books.readOne(bookId)) {
+    errors.push({ field: 'bookId', message: `Book ${bookId} does not exist` });
+  }
+
+  if (typeof rating !== 'number') {
+    errors.push({ field: 'rating', message: 'Rating is required and must be a number' });
+  } else if (rating < 1 || rating > 5) {
+    errors.push({ field: 'rating', message: 'Rating must be the number 1, 2, 3, 4, or 5' });
+  }
+
+  return errors;
+}
 
 async function fnGetAllUsers(req, res) {
   let { offset = 0, limit = 10 } = req.query;
@@ -89,10 +97,52 @@ async function fnUpdateUser(req, res) {
   return res.status(200).json({ row });
 }
 
+async function fnUpdateUserImage(req, res) {
+  const url = await upload(req, res);
+  res.status(200).json(url);
+}
+
+async function fnReadBook(req, res) {
+  let readBook;
+  const {
+    bookId,
+    rating = '',
+    review,
+  } = req.body;
+
+  const userId = req.user.id;
+
+  const errors = await validateBook(bookId, rating);
+  if (errors.length !== 0) return res.status(400).json({ errors });
+
+  if (await books.readOne(bookId) && await users.findById(userId)) {
+    readBook = await userbooks.readBook(userId, bookId, rating, review);
+  }
+  return res.status(200).json({ readBook });
+}
+
+async function fnGetAllReadBooks(req, res) {
+  let { offset = 0, limit = 10 } = req.query;
+  offset = Number(offset);
+  limit = Number(limit);
+
+  const { user } = req;
+  const readBooks = await userbooks.getAllReadBooks(user.id, offset, limit);
+  res.status(200).json({ offset, limit, items: readBooks });
+}
 router.get('/', catchErrors(fnGetAllUsers));
+
 router.route('/me')
   .get(catchErrors(fnGetCurrentUser))
   .patch(catchErrors(fnUpdateUser));
+
+router.post('/me/profile', uploads.single('image'), catchErrors(fnUpdateUserImage));
+
+router.route('/me/read')
+  .get(catchErrors(fnGetAllReadBooks))
+  .post(catchErrors(fnReadBook));
+
 router.get('/:id', catchErrors(fnGetUser));
+
 
 module.exports = router;

@@ -81,8 +81,8 @@ router.post('/register', async (req, res) => {
   if (errors.errors.length !== 0) {
     return res.status(400).json(errors);
   }
-  await users.createUser(username, password, name)
-    .then(data => res.status(200).json(data));
+  const data = await users.createUser(username, password, name);
+  return res.status(201).json(data);
 });
 
 module.exports = { router, validateUser };

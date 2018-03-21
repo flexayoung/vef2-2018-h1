@@ -2,14 +2,14 @@ require('dotenv').config();
 // const cloudinary = require('cloudinary');
 const express = require('express');
 const usersAPI = require('./usersAPI');
-// const users = require('./users');
 const booksAPI = require('./booksAPI');
 const categories = require('./categories');
-// const multer = require('multer');
-// const uploads = multer({ dest: './temp' });
 const authorise = require('./authorise');
 const passport = require('passport');
+
 require('./pass');
+require('./cloudinary');
+
 
 const {
   PORT: port = 3000,
@@ -38,6 +38,7 @@ function requireAuthentication(req, res, next) {
 
       req.user = user;
       next();
+      return null;
     },
   )(req, res, next);
 }

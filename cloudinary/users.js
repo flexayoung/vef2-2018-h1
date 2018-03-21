@@ -57,12 +57,16 @@ async function createUser(username, password, name) {
 
   const result = await query(q, [username, hashedPassword, name]);
 
-  return {
-    id: result.rows[0].id,
-    username: result.rows[0].username,
-    name: result.rows[0].name,
-    image: result.rows[0].url,
-  };
+  if (result.rowCount === 1) {
+    return {
+      id: result.rows[0].id,
+      username: result.rows[0].username,
+      name: result.rows[0].name,
+      image: result.rows[0].url,
+    };
+  }
+
+  return null;
 }
 
 async function getAllUsers(offset, limit) {
@@ -86,13 +90,16 @@ async function updateUser(id, password, name) {
     result = await query(q, [password, id]);
   }
 
-  const user = result.rows[0];
-  return {
-    id: user.id,
-    username: user.username,
-    name: user.name,
-    image: user.url,
-  };
+  if (result.rowCount === 1) {
+    return {
+      id: result.rows[0].id,
+      username: result.rows[0].username,
+      name: result.rows[0].name,
+      image: result.rows[0].url,
+    };
+  }
+
+  return null;
 }
 
 module.exports = {
