@@ -99,6 +99,7 @@ async function fnUpdateUser(req, res) {
 
 async function fnUpdateUserImage(req, res) {
   const url = await upload(req, res);
+  await users.updateImage(req.user.id, url);
   res.status(200).json(url);
 }
 

@@ -102,6 +102,11 @@ async function updateUser(id, password, name) {
   return null;
 }
 
+async function updateImage(userId, url) {
+  const q = 'UPDATE users SET url = $2 WHERE id = $1 RETURNING *';
+  await query(q, [userId, url]);
+}
+
 module.exports = {
   comparePasswords,
   findByUsername,
@@ -109,4 +114,5 @@ module.exports = {
   createUser,
   getAllUsers,
   updateUser,
+  updateImage,
 };
