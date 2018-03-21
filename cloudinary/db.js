@@ -60,6 +60,7 @@ async function select(search = '') {
     connectionString,
   });
   await client.connect();
+  let res = null;
   try {
     const q = `
       SELECT * FROM books
@@ -68,14 +69,13 @@ async function select(search = '') {
         OR
         to_tsvector('english', descr) @@ to_tsquery('english', $1)
     `;
-    const res = await client.query(q, [search]);
+    res = await client.query(q, [search]);
     return res.rows;
-    
   } catch (e) {
     console.error('Error selecting', e);
   }
-
   await client.end();
+  return res;
 }
 
 module.exports = {
