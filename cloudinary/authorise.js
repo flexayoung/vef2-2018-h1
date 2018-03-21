@@ -30,10 +30,11 @@ async function validateUser(username, password, name) {
     errors.push({ field: 'username', message: 'Username is required and must be at least three letters' });
   }
 
-  const user = await users.findByUsername(username);
-
-  if (user) {
-    errors.push({ field: 'username', message: 'Username is already registered' });
+  if (username) {
+    const user = await users.findByUsername(username);
+    if (user) {
+      errors.push({ field: 'username', message: 'Username is already registered' });
+    }
   }
 
   if (typeof password !== 'string' || password.length < 6) {
@@ -46,6 +47,7 @@ async function validateUser(username, password, name) {
 
   return errors;
 }
+
 
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -83,4 +85,4 @@ router.post('/register', async (req, res) => {
     .then(data => res.status(200).json(data));
 });
 
-module.exports = router;
+module.exports = { router, validateUser };

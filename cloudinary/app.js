@@ -41,7 +41,7 @@ function requireAuthentication(req, res, next) {
   )(req, res, next);
 }
 
-app.use('/', authorise);
+app.use('/', authorise.router);
 app.use('/books', booksAPI);
 app.use('/users', requireAuthentication, usersAPI);
 

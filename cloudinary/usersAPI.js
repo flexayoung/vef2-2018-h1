@@ -1,7 +1,6 @@
 const express = require('express');
 const users = require('./users');
 
-
 // const {
 //   upload,
 // } = require('./cloudinary');
@@ -10,6 +9,20 @@ const router = express.Router();
 
 function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
+}
+
+async function validateUser(password, name) {
+  const errors = [];
+  
+  if (typeof password !== 'undefined' && (typeof password !== 'string' || password.length < 6)) {
+    errors.push({ field: 'password', message: 'Password must be at least six characters' });
+  }
+
+  if (typeof name !== 'undefined' && (typeof name !== 'string' || name.length < 2)) {
+    errors.push({ field: 'name', message: 'Name must not be empty and at least 2 characters ' });
+  }
+
+  return errors;
 }
 
 // app.get('/', (req, res) => {
@@ -44,9 +57,9 @@ async function fnGetUser(req, res) {
   return res.status(200).json({ user: row });
 }
 
-async function fnGetCurrentUser(req, res) {  
+async function fnGetCurrentUser(req, res) {
   const { user } = req;
-  return res.status(200).json({ 
+  return res.status(200).json({
     id: user.id,
     username: user.username,
     name: user.name,
@@ -57,11 +70,20 @@ async function fnGetCurrentUser(req, res) {
 async function fnUpdateUser(req, res) {
   const { user } = req;
   const {
-    name = req.user.name,
-    password = req.user.password,
+    name,
+    password,
   } = req.body;
-  const row = await users.updateUser(user.id, name, password);
-  res.satus(200).json(row);
+
+  if (typeof name === 'undefined' && typeof password === 'undefined') return res.status(400).json({ error: 'Nothing to patch' });
+  const errors = { errors: await validateUser(password, name) };
+
+  if (errors.errors.length !== 0) {
+    return res.status(400).json(errors);
+  }
+
+  const row = await users.updateUser(user.id, password, name);
+
+  return res.status(200).json({ row });
 }
 
 router.get('/', catchErrors(fnGetAllUsers));
