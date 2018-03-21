@@ -24,7 +24,7 @@ Some examples of calls to the database:
   }
 ```
   
-  `curl http://localhost:3000/books/66`
+  `curl http://localhost:3000/books/6`
   ```json
 { 
     "id": 6,
