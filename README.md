@@ -15,20 +15,26 @@ Now your all set and ready to go. Run `npm start` to launch the application.
 Some examples of calls to the database:
 
 `curl -d '{"username":"myUsername", "password":"itsAsecret", "name":"My Name"}' -H "Content-Type: application/json" -X POST http://localhost:3000/register`
-  { 
+  ```json
+{ 
     "id": 19,
     "username": "myUsername",
     "name":"My Name",
     "image":null
   }
+```
+  
   `curl http://localhost:3000/books/66`
-  {
+    ```json
+{
     "id":6,
     "title":"A Crown of Swords (Wheel of Time, #7)",
     "isbn13":"9780812550283","author":"Robert Jordan",
     "descr":"Elayne, Aviendha, and Mat work to restore the world's natural weather, while Egwene gathers a group of female channelers and Rand confronts the dread Forsaken Sammael, in the seventh volume in the Wheel of Time series. Reprint.",
     "category":"Fantasy"
     }
+```
+  
 
 ## The A-Team
 
