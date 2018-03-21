@@ -71,7 +71,7 @@ async function readOne(id) {
   /* todo útfæra */
   let query = null;
   try {
-    query = await db.runQuery(`SELECT * FROM books WHERE id = ${id}`);    
+    query = await db.runQuery(`SELECT * FROM books WHERE id = ${id}`);
     return query;
   } catch (err) { console.error(err); }
   return query;

@@ -37,12 +37,36 @@ async function getAllReadBooks(userId, offset, limit) {
   return result.rows;
 }
 
-async function deleteBook(userId, bookId) {
-  const q = 'INSERT INTO userbooks (userID, bookID, score, review) VALUES ($1, $2, $3, $4) RETURNING *';
-  const result = await query(q, [userId, bookId, score, review]);
+async function isBookReviewed(userId, bookId) {
+  const q = 'SELECT * FROM userbooks WHERE userID = $1 AND bookID = $2';
+  const result = await query(q, [userId, bookId]);
+
+  if (result.rowCount === 1) {
+    return result.rows[0];
+  }
+
+  return null;
 }
+
+async function updateUserReview(userId, bookId, rating, review) {
+  const q = 'UPDATE userbooks SET score = $3, review = $4 WHERE userID = $1 AND bookID = $2 RETURNING *';
+  const result = await query(q, [userId, bookId, rating, review]);
+  if (result.rowCount === 1) {
+    return result.rows[0];
+  }
+
+  return null;
+}
+
+async function deleteReview(userId, bookId) {
+  const q = 'DELETE FROM userbooks WHERE userID = $1 AND bookID = $2';
+  await query(q, [userId, bookId]);
+}
+
 module.exports = {
   readBook,
-  deleteBook,
+  deleteReview,
   getAllReadBooks,
+  isBookReviewed,
+  updateUserReview,
 };

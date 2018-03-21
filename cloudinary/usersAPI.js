@@ -115,7 +115,10 @@ async function fnReadBook(req, res) {
   const errors = await validateBook(bookId, rating);
   if (errors.length !== 0) return res.status(400).json({ errors });
 
-  if (await books.readOne(bookId) && await users.findById(userId)) {
+  const isBookRegistered = await userbooks.isBookReviewed(userId, bookId);
+  if (isBookRegistered) {
+    readBook = await userbooks.updateUserReview(userId, bookId, rating, review);
+  } else if (await books.readOne(bookId) && await users.findById(userId)) {
     readBook = await userbooks.readBook(userId, bookId, rating, review);
   }
   return res.status(200).json({ readBook });
@@ -130,6 +133,29 @@ async function fnGetAllReadBooks(req, res) {
   const readBooks = await userbooks.getAllReadBooks(user.id, offset, limit);
   res.status(200).json({ offset, limit, items: readBooks });
 }
+
+async function fnGetBooksById(req, res) {
+  let { offset = 0, limit = 10 } = req.query;
+  offset = Number(offset);
+  limit = Number(limit);
+
+  const userId = req.params.id;
+  const readBooks = await userbooks.getAllReadBooks(userId, offset, limit);
+  res.status(200).json({ offset, limit, items: readBooks });
+}
+async function fnDeleteUserReview(req, res) {
+  const bookId = req.params.id;
+  const { user } = req;
+
+  const isBookRegistered = await userbooks.isBookReviewed(user.id, bookId);
+  if (isBookRegistered) {
+    await userbooks.deleteReview(user.id, bookId);
+    res.status(200).json({ msg: 'Book review successfully deleted' });
+  } else {
+    res.status(400).json({ error: 'Book review not found' });
+  }
+}
+
 router.get('/', catchErrors(fnGetAllUsers));
 
 router.route('/me')
@@ -142,7 +168,10 @@ router.route('/me/read')
   .get(catchErrors(fnGetAllReadBooks))
   .post(catchErrors(fnReadBook));
 
+router.delete('/me/read/:id', catchErrors(fnDeleteUserReview));
+
 router.get('/:id', catchErrors(fnGetUser));
+router.get('/:id/read', catchErrors(fnGetBooksById));
 
 
 module.exports = router;
