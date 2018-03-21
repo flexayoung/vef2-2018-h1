@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
   limit = Number(limit);
 
   readAll(offset, limit)
-    .then(data => res.json(data))
+    .then(data => res.status(200).json({ limit, offset, items: data }))
     .catch(err => console.error(err));
 });
 

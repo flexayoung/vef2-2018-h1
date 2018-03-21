@@ -40,7 +40,6 @@ async function fetchData() {
 
 async function runQuery(query) {
   const client = new Client({ connectionString });
-
   await client.connect();
 
   try {
@@ -56,8 +55,32 @@ async function runQuery(query) {
   }
 }
 
+async function select(search = '') {
+  const client = new Client({
+    connectionString,
+  });
+  await client.connect();
+  let res = null;
+  try {
+    const q = `
+      SELECT * FROM books
+      WHERE
+        to_tsvector('english', title) @@ to_tsquery('english', $1)
+        OR
+        to_tsvector('english', descr) @@ to_tsquery('english', $1)
+    `;
+    res = await client.query(q, [search]);
+    return res.rows;
+  } catch (e) {
+    console.error('Error selecting', e);
+  }
+  await client.end();
+  return res;
+}
+
 module.exports = {
   saveToDb,
   fetchData,
   runQuery,
+  select,
 };

@@ -8,6 +8,7 @@ const {
   readOne,
   update,
   del,
+  select,
 } = require('./books');
 
 const router = express.Router();
@@ -68,16 +69,24 @@ async function deleteData(req, res) {
   }
   return res.json({ error: 'Book not found' });
 }
+
 router.post('/', validation, catchErrors(createData));
 
 router.get('/', async (req, res) => {
-  let { offset = 0, limit = 10 } = req.query;
-  offset = Number(offset);
-  limit = Number(limit);
+  const { search } = req.query;
 
-  readAll(offset, limit)
-    .then(data => res.json(data))
-    .catch(err => console.error(err));
+  if (search) {
+    select(search)
+      .then(data => res.json(data))
+      .catch(err => console.error(err));
+  } else {
+    let { offset = 0, limit = 10 } = req.query;
+    offset = Number(offset);
+    limit = Number(limit);
+    readAll(offset, limit)
+      .then(data => res.status(200).json({ limit, offset, items: data }))
+      .catch(err => console.error(err));
+  }
 });
 
 router.get('/:slug', async (req, res) => {
