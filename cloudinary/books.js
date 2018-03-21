@@ -91,6 +91,17 @@ async function del(id) {
   return query;
 }
 
+async function select(search) {
+  /* todo útfæra */
+  let query = null;
+  try {
+    query = await db.select(search);
+    return query;
+  } catch (err) { console.error(err); }
+  return query;
+}
+
+
 module.exports = {
   validation,
   create,
@@ -98,5 +109,6 @@ module.exports = {
   readOne,
   update,
   del,
+  select,
 };
 
