@@ -25,14 +25,14 @@ Some examples of calls to the database:
 ```
   
   `curl http://localhost:3000/books/66`
-    ```json
-{
-    "id":6,
-    "title":"A Crown of Swords (Wheel of Time, #7)",
-    "isbn13":"9780812550283","author":"Robert Jordan",
-    "descr":"Elayne, Aviendha, and Mat work to restore the world's natural weather, while Egwene gathers a group of female channelers and Rand confronts the dread Forsaken Sammael, in the seventh volume in the Wheel of Time series. Reprint.",
-    "category":"Fantasy"
-    }
+  ```json
+{ 
+    "id": 6,
+    "title": "A Crown of Swords (Wheel of Time, #7)",
+    "isbn13": "9780812550283",
+    "descr": "Elayne, Aviendha, and Mat work to restore the world's natural weather, while Egwene gathers a group of female channelers and Rand confronts the dread Forsaken Sammael, in the seventh volume in the Wheel of Time series. Reprint.",
+    "category": "Fantasy"
+  }
 ```
   
 
