@@ -74,7 +74,7 @@ async function getAllUsers(offset, limit) {
 async function updateUser(id, password, name) {
   let result;
   let q;
-  
+
   if (typeof name !== 'undefined' && typeof password !== 'undefined') {
     q = 'UPDATE users SET name = $1, password = $2 WHERE id = $3 RETURNING *';
     result = await query(q, [name, password, id]);
@@ -85,7 +85,7 @@ async function updateUser(id, password, name) {
     q = 'UPDATE users SET password = $1 WHERE id = $2 RETURNING *';
     result = await query(q, [password, id]);
   }
-  
+
   const user = result.rows[0];
   return {
     id: user.id,

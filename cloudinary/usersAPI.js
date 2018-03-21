@@ -13,7 +13,7 @@ function catchErrors(fn) {
 
 async function validateUser(password, name) {
   const errors = [];
-  
+
   if (typeof password !== 'undefined' && (typeof password !== 'string' || password.length < 6)) {
     errors.push({ field: 'password', message: 'Password must be at least six characters' });
   }
@@ -74,7 +74,10 @@ async function fnUpdateUser(req, res) {
     password,
   } = req.body;
 
-  if (typeof name === 'undefined' && typeof password === 'undefined') return res.status(400).json({ error: 'Nothing to patch' });
+  if (typeof name === 'undefined' && typeof password === 'undefined') {
+    return res.status(400).json({ error: 'Nothing to patch' });
+  }
+
   const errors = { errors: await validateUser(password, name) };
 
   if (errors.errors.length !== 0) {
